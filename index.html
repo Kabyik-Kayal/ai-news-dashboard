@@ -2,9 +2,237 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AI News Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Releases Dashboard</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #f7f7f8;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #1f2328;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  .note {
+    color: #9ca3af;
+    font-size: 11px;
+    margin-bottom: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .col {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px;
+    min-width: 0;
+  }
+  .col h2 {
+    font-size: 14px;
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid currentColor;
+  }
+  .col.agents h2 { color: #4f46e5; }
+  .col.infra h2 { color: #0891b2; }
+  .col.applied h2 { color: #059669; }
+  .col.opensource h2 { color: #d97706; }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    margin: 0 0 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f1f3;
+  }
+  li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  li a {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  li a:hover { text-decoration: underline; }
+  .meta {
+    color: #9ca3af;
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .desc {
+    color: #4b5563;
+    font-size: 12px;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .quiet {
+    color: #9ca3af;
+    font-size: 12px;
+    font-style: italic;
+  }
+  footer {
+    margin-top: 20px;
+    color: #9ca3af;
+    font-size: 11px;
+  }
+</style>
 </head>
 <body>
-<p>Dashboard building…</p>
+
+<h1>AI Releases Dashboard</h1>
+<div class="note">Snapshot: 2026-07-26 11:59 IST &middot; covers ~last 48h &middot; rebuilds nightly at 21:00</div>
+
+<div class="grid">
+
+  <div class="col agents">
+    <h2>Agents</h2>
+    <ul>
+      <li>
+        <a href="https://fly.io/blog/kurt-scott-money-sprites/" target="_blank" rel="noopener">Fly.io is betting on computers for AI agents</a>
+        <div class="meta">20 pts &middot; 3 comments &middot; fly.io</div>
+      </li>
+      <li>
+        <a href="https://fortune.com/2026/07/23/dead-internet-theory-bots-agents-majority-web-traffic/" target="_blank" rel="noopener">Dead Internet Theory was right: AI agents eating Web, ~8k% growth</a>
+        <div class="meta">14 pts &middot; 0 comments &middot; fortune.com</div>
+      </li>
+      <li>
+        <a href="https://x402vps.com" target="_blank" rel="noopener">Show HN: X402vps – Docker containers for AI agents, paid hourly in USDC</a>
+        <div class="meta">14 pts &middot; 0 comments &middot; x402vps.com</div>
+      </li>
+      <li>
+        <a href="https://www.actenon.com/" target="_blank" rel="noopener">I scanned my AI agent framework for destructive/consequential actions</a>
+        <div class="meta">8 pts &middot; 2 comments &middot; actenon.com</div>
+      </li>
+      <li>
+        <a href="https://news.ycombinator.com/item?id=49049986" target="_blank" rel="noopener">Ask HN: What do you do when your AI agents are working?</a>
+        <div class="meta">5 pts &middot; 2 comments &middot; news.ycombinator.com</div>
+      </li>
+      <li>
+        <a href="https://jackpoulson.substack.com/p/securities-and-exchange-commission" target="_blank" rel="noopener">SEC acquiring AI agents to monitor phone locations, social media</a>
+        <div class="meta">5 pts &middot; 0 comments &middot; jackpoulson.substack.com</div>
+      </li>
+      <li>
+        <a href="https://pypi.org/project/pyshackle/" target="_blank" rel="noopener">Pyshackle: a hard pre-execution gate for AI agent tool calls</a>
+        <div class="meta">4 pts &middot; 0 comments &middot; pypi.org</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="col infra">
+    <h2>Infra</h2>
+    <ul>
+      <li>
+        <a href="https://www.prnewswire.com/news-releases/moreh-showcases-high-performance-llm-inference-on-amd-gpus-at-amd-advancing-ai-2026-302833887.html" target="_blank" rel="noopener">MOREH demos GLM-5.1 on 32x AMD MI300X GPUs (MoAI Inference Framework)</a>
+        <div class="meta">Jul 24 &middot; prnewswire.com</div>
+      </li>
+      <li>
+        <a href="https://github.com/LozzKappa/hotpin-llm" target="_blank" rel="noopener">HotPin: lossless 120B MoE inference on 24GB RAM (CPU-only, 50 loc)</a>
+        <div class="meta">7 pts &middot; 0 comments &middot; github.com</div>
+      </li>
+      <li>
+        <a href="https://www.photoroom.com/inside-photoroom/how-we-cut-gpu-cold-starts-from-minutes-to-seconds-with-memory-checkpointing" target="_blank" rel="noopener">Photoroom cut GPU inference cold starts to seconds with Nvidia Dynamo</a>
+        <div class="meta">3 pts &middot; 0 comments &middot; photoroom.com</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="col applied">
+    <h2>Applied AI</h2>
+    <ul>
+      <li>
+        <a href="https://tobi.knaup.me/2026-07-25-open-weight-ai-is-having-its-kubernetes-moment/" target="_blank" rel="noopener">Open-weight AI is having its Kubernetes moment</a>
+        <div class="meta">360 pts &middot; 283 comments &middot; tobi.knaup.me</div>
+      </li>
+      <li>
+        <a href="https://www.nist.gov/news-events/news/2026/07/uk-aisi-caisi-preliminary-assessment-kimi-k3s-cyber-capabilities" target="_blank" rel="noopener">UK AISI/CAISI preliminary assessment of Kimi K3's cyber capabilities</a>
+        <div class="meta">125 pts &middot; 45 comments &middot; nist.gov</div>
+      </li>
+      <li>
+        <a href="https://images.nvidia.com/pdf/Open-Weights-and-American-AI-Leadership.pdf" target="_blank" rel="noopener">Open Weights and American AI Leadership [pdf]</a>
+        <div class="meta">111 pts &middot; 2 comments &middot; images.nvidia.com</div>
+      </li>
+      <li>
+        <a href="https://blog.cloudflare.com/content-independence-day-ai-options/" target="_blank" rel="noopener">Cloudflare's new AI traffic options for customers</a>
+        <div class="meta">89 pts &middot; 61 comments &middot; blog.cloudflare.com</div>
+      </li>
+      <li>
+        <a href="https://chipsandcheese.com/p/amds-instinct-mi455x-aiming-for-the" target="_blank" rel="noopener">AMD's Instinct MI455X: Aiming for the Sun</a>
+        <div class="meta">87 pts &middot; 36 comments &middot; chipsandcheese.com</div>
+      </li>
+      <li>
+        <a href="https://www.jpost.com/business-and-innovation/tech-and-start-ups/article-903442" target="_blank" rel="noopener">Oracle fires 21,000 employees to fund AI spending</a>
+        <div class="meta">77 pts &middot; 14 comments &middot; jpost.com</div>
+      </li>
+      <li>
+        <a href="https://rewardhacking.org" target="_blank" rel="noopener">AIs don't do what you want. This is bad</a>
+        <div class="meta">84 pts &middot; 84 comments &middot; rewardhacking.org</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="col opensource">
+    <h2>Open-source</h2>
+    <ul>
+      <li>
+        <a href="https://github.com/xai-org/grok-build" target="_blank" rel="noopener">xai-org/grok-build</a>
+        <div class="meta">&#9733; 22,573 &middot; Rust</div>
+        <div class="desc">SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensible.</div>
+      </li>
+      <li>
+        <a href="https://github.com/unicity-aos/aos-ce" target="_blank" rel="noopener">unicity-aos/aos-ce</a>
+        <div class="meta">&#9733; 7,313 &middot; Rust</div>
+        <div class="desc">AOS Community Edition: the open agent operating system.</div>
+      </li>
+      <li>
+        <a href="https://github.com/elder-plinius/T3MP3ST" target="_blank" rel="noopener">elder-plinius/T3MP3ST</a>
+        <div class="meta">&#9733; 5,196 &middot; TypeScript</div>
+        <div class="desc">Autonomous red teaming platform; multi-agent offensive-security meta-harness.</div>
+      </li>
+      <li>
+        <a href="https://github.com/oomol-lab/open-connector" target="_blank" rel="noopener">oomol-lab/open-connector</a>
+        <div class="meta">&#9733; 3,320 &middot; TypeScript</div>
+        <div class="desc">Open-source auth gateway connecting 1000+ SaaS providers to AI agents.</div>
+      </li>
+      <li>
+        <a href="https://github.com/synthetic-sciences/openscience" target="_blank" rel="noopener">synthetic-sciences/openscience</a>
+        <div class="meta">&#9733; 2,788 &middot; TypeScript</div>
+        <div class="desc">The open-source AI workbench for scientific research.</div>
+      </li>
+      <li>
+        <a href="https://github.com/isjiamu/gzh-design-skill" target="_blank" rel="noopener">isjiamu/gzh-design-skill</a>
+        <div class="meta">&#9733; 2,522 &middot; HTML</div>
+        <div class="desc">AI-agent skill that turns Markdown into paste-ready WeChat article HTML.</div>
+      </li>
+      <li>
+        <a href="https://github.com/lopopolo/harness-engineering" target="_blank" rel="noopener">lopopolo/harness-engineering</a>
+        <div class="meta">&#9733; 2,355 &middot; Python</div>
+        <div class="desc">Anthology, field guide, and agent context bundle for harness engineering.</div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>Generated automatically from Hacker News, GitHub trending, arXiv, and web search. arXiv/Reddit unreachable this run.</footer>
+
 </body>
 </html>
