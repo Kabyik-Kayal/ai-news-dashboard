@@ -3,225 +3,612 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Releases Dashboard</title>
+<title>AI News Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  (function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
 <style>
+  :root {
+    /* Warm Parchment & Reader-Friendly Light Palette */
+    --bg-color: #fcfaf6;
+    --text-color: #1c1917;
+    --text-muted: #78716c;
+    --card-bg: #ffffff;
+    --card-border: #e7e5e4;
+    --card-shadow: 0 1px 3px rgba(28, 25, 23, 0.04), 0 4px 12px rgba(28, 25, 23, 0.02);
+    
+    --item-bg: #f5f2eb;
+    --item-border: #e6e1d9;
+    --item-hover: #ece6dc;
+    
+    --link-color: #1c1917;
+    --link-hover: #c2410c;
+    --badge-bg: #ffffff;
+    --badge-text: #57534e;
+    --badge-border: #d6d3d1;
+    --focus-ring: #c2410c;
+    
+    /* Warm Domain Accent Indicators */
+    --accent-agents: #4f46e5;
+    --accent-infra: #c2410c;
+    --accent-applied: #047857;
+    --accent-opensource: #b45309;
+    
+    /* Morning Sky Palette for Sun Toggle */
+    --toggle-bg: #fffbeb;
+    --toggle-border: #fde68a;
+  }
+
+  [data-theme="dark"] {
+    /* Warm Espresso & Dark Charcoal Palette */
+    --bg-color: #12100e;
+    --text-color: #f5f3ef;
+    --text-muted: #a8a29e;
+    --card-bg: #1a1715;
+    --card-border: #292524;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    
+    --item-bg: #231f1c;
+    --item-border: #332d29;
+    --item-hover: #2d2724;
+    
+    --link-color: #f5f3ef;
+    --link-hover: #fb923c;
+    --badge-bg: #1a1715;
+    --badge-text: #a8a29e;
+    --badge-border: #44403c;
+    --focus-ring: #fb923c;
+    
+    --accent-agents: #818cf8;
+    --accent-infra: #fb923c;
+    --accent-applied: #34d399;
+    --accent-opensource: #fbbf24;
+    
+    /* Midnight Cosmos Sky Palette for Moon Toggle */
+    --toggle-bg: #1e1b4b;
+    --toggle-border: #3730a3;
+  }
+
   * { box-sizing: border-box; }
-  body {
+  
+  html, body {
+    min-height: 100vh;
     margin: 0;
-    padding: 24px;
-    background: #f7f7f8;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    color: #1f2328;
+    padding: 0;
+    background: var(--bg-color);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13.5px;
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
   }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    padding: 20px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Header Section */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  
+  .brand-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
   h1 {
-    font-size: 20px;
-    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.025em;
+    color: var(--text-color);
   }
-  .note {
-    color: #9ca3af;
-    font-size: 11px;
-    margin-bottom: 20px;
+  
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
   }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Celestial Realistic Sun Setting & Moon Rising Button */
+  .theme-toggle {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--toggle-border);
+    background: var(--toggle-bg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: background 0.45s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .theme-toggle:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .sun-icon, .moon-icon {
+    position: absolute;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+  }
+
+  /* Light Mode: Radiant Sun in Sky, Moon set below horizon */
+  :root .sun-icon {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  :root .moon-icon {
+    transform: translateY(30px) rotate(-90deg) scale(0.4);
+    opacity: 0;
+  }
+
+  /* Dark Mode: Sun sets down into horizon, Crescent Moon rises up into midnight sky */
+  [data-theme="dark"] .sun-icon {
+    transform: translateY(30px) rotate(90deg) scale(0.4);
+    opacity: 0;
+  }
+  [data-theme="dark"] .moon-icon {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  /* Full-Width 4-Column Grid */
   .grid {
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 18px;
+    align-items: start;
   }
-  @media (max-width: 900px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
+  
+  @media (max-width: 1120px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
-  @media (max-width: 560px) {
+  
+  @media (max-width: 600px) {
     .grid { grid-template-columns: 1fr; }
   }
+
+  /* Column Cards */
   .col {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 14px;
-    min-width: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
   }
+
+  .col-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+  }
+  
+  .col-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .col-title-indicator {
+    width: 4px;
+    height: 14px;
+    border-radius: 2px;
+  }
+  
+  .col.agents .col-title-indicator { background: var(--accent-agents); }
+  .col.infra .col-title-indicator { background: var(--accent-infra); }
+  .col.applied .col-title-indicator { background: var(--accent-applied); }
+  .col.opensource .col-title-indicator { background: var(--accent-opensource); }
+
   .col h2 {
-    font-size: 14px;
-    margin: 0 0 10px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid currentColor;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.015em;
+    color: var(--text-color);
   }
-  .col.agents h2 { color: #4f46e5; }
-  .col.infra h2 { color: #0891b2; }
-  .col.applied h2 { color: #059669; }
-  .col.opensource h2 { color: #d97706; }
-  ul {
+
+  /* Tight Item List Layout */
+  ul.item-list {
     list-style: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
-  li {
-    margin: 0 0 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f0f1f3;
+
+  /* News Item Micro-Cards with Warm Surfaces */
+  li.item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--item-bg);
+    border: 1px solid var(--item-border);
+    transition: background 0.15s ease, border-color 0.15s ease;
   }
-  li:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+  
+  li.item:hover {
+    background: var(--item-hover);
   }
-  li a {
-    color: #1d4ed8;
+
+  .item-title {
+    color: var(--link-color);
     text-decoration: none;
     font-weight: 600;
-    line-height: 1.35;
+    font-size: 13.5px;
+    line-height: 1.4;
+    display: block;
+    margin-bottom: 5px;
+    transition: color 0.15s ease;
   }
-  li a:hover { text-decoration: underline; }
+  
+  .item-title:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+  }
+
+  /* Meta & Badges */
   .meta {
-    color: #9ca3af;
-    font-size: 11px;
-    margin-top: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
   }
+  
+  .badge {
+    font-size: 10.5px;
+    font-weight: 500;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    border: 1px solid var(--badge-border);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  
+  .badge.comments { color: var(--accent-infra); font-weight: 500; }
+  .badge.stars { color: var(--accent-opensource); font-weight: 600; }
+  .badge.domain { color: var(--text-muted); }
+  .badge.arxiv { color: var(--accent-agents); font-weight: 600; }
+
   .desc {
-    color: #4b5563;
+    color: var(--text-muted);
     font-size: 12px;
-    margin-top: 3px;
+    margin-top: 4px;
     line-height: 1.4;
   }
+  
   .quiet {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 12px;
     font-style: italic;
+    padding: 12px;
+    text-align: center;
   }
+
+  /* Footer Section */
   footer {
-    margin-top: 20px;
-    color: #9ca3af;
-    font-size: 11px;
+    margin-top: 24px;
+    color: var(--text-muted);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .footer-links a:hover {
+    color: var(--link-color);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body, .col, .item, .item-title, .theme-toggle, .sun-icon, .moon-icon {
+      transition: none !important;
+      animation: none !important;
+    }
   }
 </style>
 </head>
 <body>
 
-<h1>AI Releases Dashboard</h1>
-<div class="note">Snapshot: 2026-08-08 16:23 IST &middot; covers ~last 48h &middot; rebuilds nightly at 21:00</div>
+<div class="container">
 
-<div class="grid">
+  <header class="header">
+    <div class="brand-group">
+      <div class="title-row">
+        <h1>AI News Dashboard</h1>
+      </div>
+      <div class="subtitle">Snapshot: <strong>2026-08-08 19:52 IST</strong></div>
+    </div>
+    <div class="header-actions">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light mode">
+        <!-- Detailed Gradient Sun SVG -->
+        <svg class="sun-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffe066"/>
+              <stop offset="70%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#d97706"/>
+            </radialGradient>
+            <linearGradient id="rayGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fbbf24"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+          </defs>
+          <circle cx="12" cy="12" r="5" fill="url(#sunGrad)" stroke="#d97706" stroke-width="0.75"/>
+          <path d="M12 1.5v2.5M12 20v2.5M1.5 12h2.5M20 12h2.5M4.58 4.58l1.77 1.77M17.65 17.65l1.77 1.77M4.58 19.42l1.77-1.77M17.65 6.35l1.77-1.77" 
+                stroke="url(#rayGrad)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <!-- Detailed Gradient Moon SVG -->
+        <svg class="moon-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fef08a"/>
+              <stop offset="50%" stop-color="#fde047"/>
+              <stop offset="100%" stop-color="#eab308"/>
+            </linearGradient>
+            <filter id="craterGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0.5" stdDeviation="0.5" flood-color="#713f12" flood-opacity="0.3"/>
+            </filter>
+          </defs>
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="url(#moonGrad)" stroke="#ca8a04" stroke-width="0.75"/>
+          <circle cx="10" cy="11.5" r="1.3" fill="#ca8a04" opacity="0.35" filter="url(#craterGlow)"/>
+          <path d="M19 4l.4.8.8.4-.8.4-.4.8-.4-.8-.8-.4.8-.4z" fill="#fef08a" opacity="0.9"/>
+          <path d="M15 18l.3.6.6.3-.6.3-.3.6-.3-.6-.6-.3.6-.3z" fill="#fef9c3" opacity="0.8"/>
+        </svg>
+      </button>
+    </div>
+  </header>
 
-  <div class="col agents">
-    <h2>Agents</h2>
-    <ul>
-      <li>
-        <a href="https://scalex.dev/blog/ai-agent-permissions-stats/" target="_blank" rel="noopener">Humans missed 1 in 3 threats approving AI agent commands across 40k game runs</a>
-        <div class="meta">332 pts &middot; 243 comments &middot; scalex.dev</div>
+  <main class="grid" role="main">
+
+    <section class="col agents" aria-label="Agents news section">
+      <div class="col-header">
+        <div class="col-title-group">
+          <div class="col-title-indicator"></div>
+          <h2>Agents</h2>
+        </div>
+      </div>
+    <ul class="item-list">
+      <li class="item">
+        <a href="https://thenextweb.com/news/openai-agent-plugins-open-standard-skills-mcp" target="_blank" rel="noopener" class="item-title">OpenAI and four rivals just agreed on one standard for AI agents</a>
+        <div class="meta"><span class="badge comments">3 comments</span><span class="badge domain">thenextweb.com</span></div>
       </li>
-      <li>
-        <a href="https://thenextweb.com/news/openai-agent-plugins-open-standard-skills-mcp" target="_blank" rel="noopener">OpenAI and four rivals just agreed on one standard for AI agents</a>
-        <div class="meta">24 pts &middot; 3 comments &middot; thenextweb.com</div>
+      <li class="item">
+        <a href="https://www.cnn.com/2026/08/04/tech/ai-anthropic-openai-security-breach-intl-hnk" target="_blank" rel="noopener" class="item-title">AI agents fake identities, target real people in new security incident</a>
+        <div class="meta"><span class="badge comments">5 comments</span><span class="badge domain">cnn.com</span></div>
       </li>
-      <li>
-        <a href="https://www.cnn.com/2026/08/04/tech/ai-anthropic-openai-security-breach-intl-hnk" target="_blank" rel="noopener">AI agents fake identities, target real people in new security incident</a>
-        <div class="meta">14 pts &middot; 5 comments &middot; cnn.com</div>
+      <li class="item">
+        <a href="https://www.wired.com/story/openai-didnt-notice-its-ai-agents-using-a-message-board-to-plan-their-hacking-spree/" target="_blank" rel="noopener" class="item-title">OpenAI Didn't Notice Its AI Agents Using a Message Board to Plan Hacking Spree</a>
+        <div class="meta"><span class="badge comments">0 comments</span><span class="badge domain">wired.com</span></div>
       </li>
-      <li>
-        <a href="https://www.wired.com/story/openai-didnt-notice-its-ai-agents-using-a-message-board-to-plan-their-hacking-spree/" target="_blank" rel="noopener">OpenAI Didn't Notice Its AI Agents Using a Message Board to Plan a Hacking Spree</a>
-        <div class="meta">6 pts &middot; 0 comments &middot; wired.com</div>
+      <li class="item">
+        <a href="https://www.wired.com/story/why-normal-people-arent-using-ai-agents/" target="_blank" rel="noopener" class="item-title">Why Normal People Aren't Using AI Agents</a>
+        <div class="meta"><span class="badge comments">2 comments</span><span class="badge domain">wired.com</span></div>
       </li>
-      <li>
-        <a href="https://www.wired.com/story/why-normal-people-arent-using-ai-agents/" target="_blank" rel="noopener">Why Normal People Aren't Using AI Agents</a>
-        <div class="meta">5 pts &middot; 2 comments &middot; wired.com</div>
+      <li class="item">
+        <a href="https://github.com/Panniantong/Agent-Reach" target="_blank" rel="noopener" class="item-title">Agent Reach: An open-source CLI that gives AI agents access to the internet</a>
+        <div class="meta"><span class="badge comments">4 comments</span><span class="badge domain">github.com</span></div>
       </li>
-      <li>
-        <a href="http://arxiv.org/abs/2608.06370v1" target="_blank" rel="noopener">The Bitter Lesson of Tool Calling</a>
-        <div class="meta">arXiv &middot; Aug 8, 2026</div>
+      <li class="item">
+        <a href="https://www.computerweekly.com/opinion/Flood-warning-How-citizens-AI-agents-will-swamp-public-services" target="_blank" rel="noopener" class="item-title">Flood warning: How citizens' AI agents will swamp public services</a>
+        <div class="meta"><span class="badge comments">1 comments</span><span class="badge domain">computerweekly.com</span></div>
       </li>
-      <li>
-        <a href="http://arxiv.org/abs/2608.06353v1" target="_blank" rel="noopener">Resourced Authority: A Mechanism-Design Model for Participatory Governance of Deployed AI Agents</a>
-        <div class="meta">arXiv &middot; Aug 8, 2026</div>
+      <li class="item">
+        <a href="https://apps.apple.com/us/app/buddy-the-ai-mobile-browser/id6788047483" target="_blank" rel="noopener" class="item-title">Show HN: Buddy – An iOS browser with an AI agent inside</a>
+        <div class="meta"><span class="badge comments">1 comments</span><span class="badge domain">apps.apple.com</span></div>
       </li>
     </ul>
-  </div>
+    </section>
 
-  <div class="col infra">
-    <h2>Infra</h2>
-    <ul>
-      <li class="quiet">No qualifying GPU/inference infra stories broke through in the last 48h &mdash; mostly evergreen market reports today.</li>
-    </ul>
-  </div>
-
-  <div class="col applied">
-    <h2>Applied AI</h2>
-    <ul>
-      <li>
-        <a href="https://app.dealroom.co/news/feed/oracle-bans-ai-generated-code-from-openjdk-despite-ellison-s-claim-oracle-isn-t-writing-its-own-code" target="_blank" rel="noopener">Oracle bans AI-generated code from OpenJDK</a>
-        <div class="meta">475 pts &middot; 340 comments &middot; dealroom.co</div>
+    <section class="col infra" aria-label="Infrastructure news section">
+      <div class="col-header">
+        <div class="col-title-group">
+          <div class="col-title-indicator"></div>
+          <h2>Infra</h2>
+        </div>
+      </div>
+    <ul class="item-list">
+      <li class="item">
+        <a href="https://www.theregister.com/systems/2026/08/06/amd-acquires-ai-chip-startup-taalas-to-boost-inference-performance-by-etching-models-into-silicon/5284344" target="_blank" rel="noopener" class="item-title">AMD acquires Taalas to boost inference performance by etching models in silicon</a>
+        <div class="meta"><span class="badge comments">687 comments</span><span class="badge domain">theregister.com</span></div>
       </li>
-      <li>
-        <a href="https://blog.sydorets.com/en/posts/almost-no-skill-required-to-cook-a-steak/" target="_blank" rel="noopener">Software development with AI is starting to feel like cooking steak</a>
-        <div class="meta">410 pts &middot; 415 comments &middot; blog.sydorets.com</div>
+      <li class="item">
+        <a href="https://openai.com/index/improving-gpt-5-6-sol-in-chatgpt/" target="_blank" rel="noopener" class="item-title">Improving GPT‑5.6 Sol in ChatGPT, expanding GPT‑5.6 Luna access for free users</a>
+        <div class="meta"><span class="badge comments">262 comments</span><span class="badge domain">openai.com</span></div>
       </li>
-      <li>
-        <a href="https://www.databricks.com/blog/managing-ai-coding-costs-scale" target="_blank" rel="noopener">Managing AI Coding Costs at Scale</a>
-        <div class="meta">244 pts &middot; 204 comments &middot; databricks.com</div>
+      <li class="item">
+        <a href="https://www.sciencedaily.com/releases/2026/08/260803080917.htm" target="_blank" rel="noopener" class="item-title">Bioengineered chewing gum may offer a way to fight HPV and other microbes</a>
+        <div class="meta"><span class="badge comments">61 comments</span><span class="badge domain">sciencedaily.com</span></div>
       </li>
-      <li>
-        <a href="https://www.fastcompany.com/91576086/ai-psychosis-is-the-new-leadership-blind-spot-ai-leadership-blind-spots" target="_blank" rel="noopener">AI psychosis is the new leadership blind spot</a>
-        <div class="meta">169 pts &middot; 105 comments &middot; fastcompany.com</div>
+      <li class="item">
+        <a href="https://www.nytimes.com/2026/08/08/climate/amazon-data-center-texas-pollution.html" target="_blank" rel="noopener" class="item-title">New Amazon Data Center Is Set to Have the Most Polluting Power Plant in the U.S.</a>
+        <div class="meta"><span class="badge comments">174 comments</span><span class="badge domain">nytimes.com</span></div>
       </li>
-      <li>
-        <a href="https://illegal.solutions/posts/xai_pollution" target="_blank" rel="noopener">xAI, SpaceX, and the Race for AI Buildout</a>
-        <div class="meta">145 pts &middot; 120 comments &middot; illegal.solutions</div>
+      <li class="item">
+        <a href="https://www.aleksagordic.com/blog/vllm" target="_blank" rel="noopener" class="item-title">Inside vLLM: Anatomy of a High-Throughput LLM Inference System (2025)</a>
+        <div class="meta"><span class="badge comments">9 comments</span><span class="badge domain">aleksagordic.com</span></div>
       </li>
-      <li>
-        <a href="https://www.shreveporttimes.com/story/news/local/louisiana/2026/07/28/is-new-orleans-using-ai-to-answer-911-calls-instead-of-human-dispatchers-impacts-emergencies-crime/91065014007/" target="_blank" rel="noopener">New Orleans is testing Carbyne's AI-powered Emergency Call Triage software</a>
-        <div class="meta">72 pts &middot; 117 comments &middot; shreveporttimes.com</div>
+      <li class="item">
+        <a href="https://github.com/V4bel/Zapscape" target="_blank" rel="noopener" class="item-title">Zapscape (CVE-2026-64561): Guest-to-Host Escape in KVM/x86</a>
+        <div class="meta"><span class="badge comments">13 comments</span><span class="badge domain">github.com</span></div>
       </li>
-      <li>
-        <a href="https://www.windowscentral.com/artificial-intelligence/microsoft-filings-suggest-around-70-percent-of-its-ai-revenue-is-concentrated-entirely-on-openai" target="_blank" rel="noopener">Microsoft filings suggest &ldquo;around 70%&rdquo; of its AI revenue is on OpenAI</a>
-        <div class="meta">49 pts &middot; 12 comments &middot; windowscentral.com</div>
+      <li class="item">
+        <a href="https://www.redhat.com/en/blog/cpu-back-rethinking-cpu-gpu-split-llm-inference" target="_blank" rel="noopener" class="item-title">The CPU is back: Rethinking the CPU-GPU split for LLM inference</a>
+        <div class="meta"><span class="badge comments">5 comments</span><span class="badge domain">redhat.com</span></div>
       </li>
     </ul>
-  </div>
+    </section>
 
-  <div class="col opensource">
-    <h2>Open-source</h2>
-    <ul>
-      <li>
-        <a href="https://github.com/xai-org/grok-build" target="_blank" rel="noopener">xai-org/grok-build</a>
-        <div class="meta">&#9733; 24,439 &middot; Rust</div>
+    <section class="col applied" aria-label="Applied AI news section">
+      <div class="col-header">
+        <div class="col-title-group">
+          <div class="col-title-indicator"></div>
+          <h2>Applied AI</h2>
+        </div>
+      </div>
+    <ul class="item-list">
+      <li class="item">
+        <a href="https://app.dealroom.co/news/feed/oracle-bans-ai-generated-code-from-openjdk-despite-ellison-s-claim-oracle-isn-t-writing-its-own-code" target="_blank" rel="noopener" class="item-title">Oracle bans AI-generated code from OpenJDK</a>
+        <div class="meta"><span class="badge comments">358 comments</span><span class="badge domain">app.dealroom.co</span></div>
+      </li>
+      <li class="item">
+        <a href="https://blog.sydorets.com/en/posts/almost-no-skill-required-to-cook-a-steak/" target="_blank" rel="noopener" class="item-title">Software development with AI is starting to feel like cooking steak</a>
+        <div class="meta"><span class="badge comments">416 comments</span><span class="badge domain">blog.sydorets.com</span></div>
+      </li>
+      <li class="item">
+        <a href="https://www.databricks.com/blog/managing-ai-coding-costs-scale" target="_blank" rel="noopener" class="item-title">Managing AI Coding Costs at Scale</a>
+        <div class="meta"><span class="badge comments">228 comments</span><span class="badge domain">databricks.com</span></div>
+      </li>
+      <li class="item">
+        <a href="https://www.fastcompany.com/91576086/ai-psychosis-is-the-new-leadership-blind-spot-ai-leadership-blind-spots" target="_blank" rel="noopener" class="item-title">AI psychosis is the new leadership blind spot</a>
+        <div class="meta"><span class="badge comments">106 comments</span><span class="badge domain">fastcompany.com</span></div>
+      </li>
+      <li class="item">
+        <a href="https://illegal.solutions/posts/xai_pollution" target="_blank" rel="noopener" class="item-title">xAI, SpaceX, and the Race for AI Buildout</a>
+        <div class="meta"><span class="badge comments">120 comments</span><span class="badge domain">illegal.solutions</span></div>
+      </li>
+      <li class="item">
+        <a href="https://www.shreveporttimes.com/story/news/local/louisiana/2026/07/28/is-new-orleans-using-ai-to-answer-911-calls-instead-of-human-dispatchers-impacts-emergencies-crime/91065014007/" target="_blank" rel="noopener" class="item-title">New Orleans is testing Carbyne’s AI-powered Emergency Call Triage software</a>
+        <div class="meta"><span class="badge comments">116 comments</span><span class="badge domain">shreveporttimes.com</span></div>
+      </li>
+      <li class="item">
+        <a href="https://web.archive.org/web/20260731053721/http://github.com/ancaferro/myNetwork/pull/3" target="_blank" rel="noopener" class="item-title">Mythos social engineering AISI INC-2026-07-28-01</a>
+        <div class="meta"><span class="badge comments">18 comments</span><span class="badge domain">web.archive.org</span></div>
+      </li>
+    </ul>
+    </section>
+
+    <section class="col opensource" aria-label="Open source repositories section">
+      <div class="col-header">
+        <div class="col-title-group">
+          <div class="col-title-indicator"></div>
+          <h2>Open-source</h2>
+        </div>
+      </div>
+    <ul class="item-list">
+      <li class="item">
+        <a href="https://github.com/xai-org/grok-build" target="_blank" rel="noopener" class="item-title">xai-org/grok-build</a>
+        <div class="meta"><span class="badge stars"><svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="display:inline-block;vertical-align:-1px;"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg> 24,449</span><span class="badge lang">Rust</span></div>
         <div class="desc">SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensible.</div>
       </li>
-      <li>
-        <a href="https://github.com/yc-software/qm" target="_blank" rel="noopener">yc-software/qm</a>
-        <div class="meta">&#9733; 12,409 &middot; TypeScript</div>
-        <div class="desc">Multiplayer agent harness for work.</div>
+      <li class="item">
+        <a href="https://github.com/yc-software/qm" target="_blank" rel="noopener" class="item-title">yc-software/qm</a>
+        <div class="meta"><span class="badge stars"><svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="display:inline-block;vertical-align:-1px;"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg> 12,459</span><span class="badge lang">TypeScript</span></div>
+        <div class="desc">Multiplayer agent harness for work</div>
       </li>
-      <li>
-        <a href="https://github.com/unicity-aos/aos-ce" target="_blank" rel="noopener">unicity-aos/aos-ce</a>
-        <div class="meta">&#9733; 8,575 &middot; Rust</div>
+      <li class="item">
+        <a href="https://github.com/unicity-aos/aos-ce" target="_blank" rel="noopener" class="item-title">unicity-aos/aos-ce</a>
+        <div class="meta"><span class="badge stars"><svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="display:inline-block;vertical-align:-1px;"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg> 8,575</span><span class="badge lang">Rust</span></div>
         <div class="desc">AOS Community Edition: the open agent operating system.</div>
       </li>
-      <li>
-        <a href="https://github.com/trycompai/crm" target="_blank" rel="noopener">trycompai/crm</a>
-        <div class="meta">&#9733; 7,610 &middot; TypeScript</div>
-        <div class="desc">Open source, agentic-first CRM designed for AI agents.</div>
+      <li class="item">
+        <a href="https://github.com/trycompai/crm" target="_blank" rel="noopener" class="item-title">trycompai/crm</a>
+        <div class="meta"><span class="badge stars"><svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="display:inline-block;vertical-align:-1px;"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg> 7,658</span><span class="badge lang">TypeScript</span></div>
+        <div class="desc">Comp AI CRM is an open source, CRM designed for AI agents. Agentic-first CRM.</div>
       </li>
-      <li>
-        <a href="https://github.com/drumih/turbo-fieldfare" target="_blank" rel="noopener">drumih/turbo-fieldfare</a>
-        <div class="meta">&#9733; 5,376 &middot; Swift</div>
-        <div class="desc">Gemma 4 26B-A4B inference in ~2 GB of RAM on any M-series MacBook.</div>
+      <li class="item">
+        <a href="https://github.com/jakubkrehel/skills" target="_blank" rel="noopener" class="item-title">jakubkrehel/skills</a>
+        <div class="meta"><span class="badge stars"><svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="display:inline-block;vertical-align:-1px;"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg> 3,250</span></div>
+        <div class="desc">A collection of agent skills that help with various parts of building a great interface. From animation and UI polish to accessibility and product writing.</div>
       </li>
-      <li>
-        <a href="https://github.com/FareedKhan-dev/kimi-k3-in-c" target="_blank" rel="noopener">FareedKhan-dev/kimi-k3-in-c</a>
-        <div class="meta">&#9733; 3,490 &middot; C</div>
-        <div class="desc">A 2.78-trillion-parameter Kimi K3 running inference on a single CPU in 8.24 GB of RAM. Portable C99, no BLAS, no GPU.</div>
-      </li>
-      <li>
-        <a href="https://github.com/jakubkrehel/skills" target="_blank" rel="noopener">jakubkrehel/skills</a>
-        <div class="meta">&#9733; 3,243</div>
-        <div class="desc">A collection of agent skills for animation, UI polish, accessibility, and product writing.</div>
+      <li class="item">
+        <a href="https://github.com/kvcache-ai/AgentENV" target="_blank" rel="noopener" class="item-title">kvcache-ai/AgentENV</a>
+        <div class="meta"><span class="badge stars"><svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="display:inline-block;vertical-align:-1px;"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg> 2,958</span><span class="badge lang">Rust</span></div>
+        <div class="desc">AgentENV (AENV) is a distributed platform for running agent environments at scale.</div>
       </li>
     </ul>
-  </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-copy">&copy; 2026 AI News Dashboard</div>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="https://www.kabyik.dev" target="_blank" rel="noopener">About me</a>
+      <a href="https://github.com/Kabyik-Kayal/ai-news-dashboard" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </footer>
 
 </div>
 
-<footer>Generated automatically from Hacker News, GitHub trending, and arXiv. Web search supplemented; Reddit not queried this run.</footer>
+<script>
+  (function() {
+    const toggleBtn = document.getElementById('themeToggle');
+
+    toggleBtn.addEventListener('click', function() {
+      const activeTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = activeTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+  })();
+</script>
 
 </body>
 </html>
