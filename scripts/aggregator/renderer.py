@@ -238,7 +238,8 @@ def generate_dashboard_html(data):
   }}
 
   /* ================================================================
-     Dusk Valley Scene — Serene Realistic Photorealistic Backdrop
+     Dusk Backdrop -- a minimal illustrated sky/ridge/moon vista,
+     drawn in inline SVG (no external image asset, no clip-art clutter)
      ================================================================ */
   .dusk-backdrop-container {{
     position: fixed;
@@ -257,29 +258,32 @@ def generate_dashboard_html(data):
     visibility: visible;
   }}
 
-  .dusk-bg-img {{
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center bottom;
-    filter: brightness(0.92) contrast(1.05) saturate(1.1);
-  }}
-
   .dusk-scene {{
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
-    pointer-events: none;
   }}
 
   .dusk-scene svg {{
     width: 100%;
     height: 100%;
     display: block;
+  }}
+
+  /* The real photo, anchored to the bottom edge, full width, height by its
+     own aspect ratio -- lands at roughly half the viewport on typical wide
+     screens, with the coded sky (behind it, same stacking layer) showing
+     through above and around it. */
+  .dusk-valley-img {{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+    user-select: none;
   }}
 
   [data-theme="dusk"] h1,
@@ -318,129 +322,188 @@ def generate_dashboard_html(data):
     transform: translateY(-2px);
   }}
 
-  /* Twinkling stars on the moonrise side */
+  /* Twinkling stars */
   @keyframes duskTwinkle {{
     0%, 100% {{ opacity: 0.25; transform: scale(0.85); }}
     50% {{ opacity: 1; transform: scale(1.2); }}
   }}
-  [data-theme="dusk"] .dusk-star {{
+  .dusk-star {{
     transform-box: fill-box;
     transform-origin: 50% 50%;
     animation: duskTwinkle 3.8s ease-in-out infinite;
   }}
 
-  /* Dying crimson sunset glow breathing gently behind left mountain horizon */
-  @keyframes duskDyingSunsetGlow {{
-    0%, 100% {{ opacity: 0.72; filter: brightness(1); }}
-    50% {{ opacity: 0.95; filter: brightness(1.18); }}
+  /* Shooting stars: invisible for ~90% of the cycle, then a quick streak
+     across the sky and gone -- occasional, not periodic-looking, since each
+     instance below runs a different duration/delay. */
+  @keyframes duskShoot {{
+    0%, 88%  {{ opacity: 0; transform: translate(0, 0); }}
+    89%      {{ opacity: 1; transform: translate(0, 0); }}
+    97%      {{ opacity: 0.9; transform: translate(300px, 98px); }}
+    100%     {{ opacity: 0; transform: translate(330px, 108px); }}
   }}
-  [data-theme="dusk"] .dusk-dying-glow {{
-    animation: duskDyingSunsetGlow 8s ease-in-out infinite;
-  }}
-  [data-theme="dusk"] .dusk-dying-rays {{
-    animation: duskDyingSunsetGlow 12s ease-in-out infinite;
-  }}
-
-  /* Atmospheric mountain fog drifting slowly */
-  @keyframes duskFogDrift {{
-    0%   {{ transform: translateX(-35px); opacity: 0.45; }}
-    50%  {{ transform: translateX(35px); opacity: 0.75; }}
-    100% {{ transform: translateX(-35px); opacity: 0.45; }}
-  }}
-  [data-theme="dusk"] .dusk-fog {{
-    animation: duskFogDrift 95s ease-in-out infinite;
-  }}
-  [data-theme="dusk"] .dusk-fog.alt {{
-    animation-direction: reverse;
-    animation-duration: 110s;
+  .dusk-shooting-star {{
+    animation-name: duskShoot;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
   }}
 
-  /* Wildflowers swaying in a gentle valley breeze */
-  @keyframes duskFlowerSway {{
-    0%, 100% {{ transform: rotate(-3.5deg); }}
-    50% {{ transform: rotate(3.5deg); }}
+  /* Last light of the setting sun, breathing gently at the horizon */
+  @keyframes duskGlowBreathe {{
+    0%, 100% {{ opacity: 0.72; }}
+    50% {{ opacity: 0.95; }}
   }}
-  [data-theme="dusk"] .dusk-flower {{
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: duskFlowerSway 6s ease-in-out infinite;
+  .dusk-glow {{
+    animation: duskGlowBreathe 8s ease-in-out infinite;
   }}
 
-  /* Floating light dust motes rising serenely */
-  @keyframes duskLightMoteFloat {{
-    0%   {{ transform: translateY(0) scale(0.8); opacity: 0.2; }}
-    50%  {{ transform: translateY(-40px) scale(1.2); opacity: 0.85; }}
-    100% {{ transform: translateY(-80px) scale(0.8); opacity: 0; }}
-  }}
-  [data-theme="dusk"] .dusk-mote {{
-    animation: duskLightMoteFloat 14s ease-in-out infinite;
-  }}
-
-  /* Butterflies drifting on calm, graceful flight loops */
-  @keyframes duskButterflyFlutter {{
-    0%    {{ transform: translate(0, 0) rotate(0deg); }}
-    25%   {{ transform: translate(35px, -20px) rotate(6deg); }}
-    50%   {{ transform: translate(70px, 4px) rotate(-4deg); }}
-    75%   {{ transform: translate(35px, 22px) rotate(5deg); }}
-    100%  {{ transform: translate(0, 0) rotate(0deg); }}
-  }}
-  [data-theme="dusk"] .dusk-butterfly {{
-    transform-box: fill-box;
-    transform-origin: 50% 50%;
-    animation: duskButterflyFlutter 26s ease-in-out infinite;
+  /* Butterflies -- ported from kabyik.dev's own header (js/butterflies.js +
+     css/header.css), CSS-shape based (no images/SVG). Only the JS color
+     palette is retuned to fit the dusk theme; the shapes are untouched.
+     Fixed to the viewport and stacked above .container so they roam over
+     the cards, not hidden behind them like the rest of the backdrop. */
+  .butterflies-container {{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
   }}
 
-  /* Wing flap 3D perspective hinge */
-  [data-theme="dusk"] .dusk-butterfly-body {{
+  .butterfly {{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+    will-change: transform, left, top, opacity;
+    transition: filter 0.5s ease;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     transform-style: preserve-3d;
-    perspective: 140px;
-  }}
-  @keyframes duskWingFlap {{
-    0%, 100% {{ transform: rotateY(0deg); }}
-    50%      {{ transform: rotateY(68deg); }}
-  }}
-  [data-theme="dusk"] .dusk-wing-l {{
-    transform-box: fill-box;
-    transform-origin: 100% 50%;
-    animation: duskWingFlap 0.75s ease-in-out infinite;
-  }}
-  [data-theme="dusk"] .dusk-wing-r {{
-    transform-box: fill-box;
-    transform-origin: 0% 50%;
-    animation: duskWingFlap 0.75s ease-in-out infinite;
   }}
 
-  /* 2 Wild Rabbits: realistic long calm resting pause, then two subtle, gentle hops */
-  @keyframes duskRabbitSereneHop {{
-    0%, 75%, 100% {{ transform: translate(0, 0) scale(1); }}
-    80%  {{ transform: translate(6px, -8px) scaleY(1.06) scaleX(0.96); }}
-    85%  {{ transform: translate(12px, -1px) scaleY(0.96) scaleX(1.03); }}
-    90%  {{ transform: translate(18px, -9px) scaleY(1.06) scaleX(0.96); }}
-    95%  {{ transform: translate(24px, 0px) scaleY(0.97) scaleX(1.02); }}
-  }}
-  [data-theme="dusk"] .dusk-rabbit {{
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: duskRabbitSereneHop 18s ease-in-out infinite;
-  }}
-  @keyframes duskRabbitShadowPulse {{
-    0%, 75%, 100% {{ opacity: 0.42; transform: scaleX(1); }}
-    80%, 90% {{ opacity: 0.18; transform: scaleX(0.75); }}
-    85%, 95% {{ opacity: 0.35; transform: scaleX(0.9); }}
-  }}
-  [data-theme="dusk"] .dusk-rabbit-shadow {{
-    transform-box: fill-box;
-    transform-origin: 50% 50%;
-    animation: duskRabbitShadowPulse 18s ease-in-out infinite;
+  .butterfly-body {{
+    position: absolute;
+    width: 3px;
+    height: 18px;
+    background: linear-gradient(to bottom, #1a1a1a, #000);
+    border-radius: 2px;
+    z-index: 3;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    --body-color: #000;
   }}
 
-  /* Rim light on mountain ridges */
-  @keyframes duskRimGlow {{
-    0%, 100% {{ opacity: 0.55; }}
-    50% {{ opacity: 0.85; }}
+  .butterfly-body::after {{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 5px;
+    background: var(--body-color, #000);
+    border-radius: 50%;
   }}
-  [data-theme="dusk"] .dusk-rim {{
-    animation: duskRimGlow 9s ease-in-out infinite;
+
+  .butterfly-antenna {{
+    position: absolute;
+    top: -4px;
+    width: 1px;
+    height: 6px;
+    background: #000;
+  }}
+
+  .butterfly-antenna::after {{
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 2px;
+    background: #000;
+    border-radius: 50%;
+  }}
+
+  .butterfly-antenna-left {{
+    left: -2px;
+    transform: rotate(-25deg);
+  }}
+
+  .butterfly-antenna-left::after {{
+    left: -1px;
+  }}
+
+  .butterfly-antenna-right {{
+    right: -2px;
+    transform: rotate(25deg);
+  }}
+
+  .butterfly-antenna-right::after {{
+    right: -1px;
+  }}
+
+  .butterfly-wings {{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+  }}
+
+  .butterfly-wing {{
+    width: 14px;
+    height: 20px;
+    background: #000;
+    position: relative;
+    border-radius: 60% 40% 40% 60%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+  }}
+
+  .butterfly-wing::before {{
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    width: 10px;
+    height: 12px;
+    background: #000;
+    border-radius: 50% 40% 60% 50%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }}
+
+  .butterfly-wing-left {{
+    transform-origin: right center;
+  }}
+
+  .butterfly-wing-left::before {{
+    right: 0;
+  }}
+
+  .butterfly-wing-right {{
+    transform-origin: left center;
+  }}
+
+  .butterfly-wing-right::before {{
+    left: 0;
+  }}
+
+  .wing-pattern {{
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    opacity: 0.3;
   }}
 
   :focus-visible {{
@@ -721,8 +784,7 @@ def generate_dashboard_html(data):
 
   @media (prefers-reduced-motion: reduce) {{
     body, .col, .item, .item-title, .theme-toggle, .sun-icon, .moon-icon, .dusk-icon,
-    .dusk-star, .dusk-glow, .dusk-rays, .dusk-cloud, .dusk-flower, .dusk-butterfly,
-    .dusk-wing-l, .dusk-wing-r, .dusk-rabbit, .dusk-rabbit-shadow, .dusk-rim {{
+    .dusk-star, .dusk-glow, .dusk-shooting-star {{
       transition: none !important;
       animation: none !important;
     }}
@@ -732,38 +794,33 @@ def generate_dashboard_html(data):
 <body>
 
 <div class="dusk-backdrop-container" aria-hidden="true">
-  <img class="dusk-bg-img" src="dusk_bg.png" alt="Serene Realistic Dusk Landscape">
   <div class="dusk-scene">
     <svg viewBox="0 0 1600 850" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <!-- Sky: Dying crimson sunset red bleeding into warm coral, violet plum, and deep midnight navy -->
+      <!-- Sky: recolored to sit behind dusk_valley.png -- a cool blue/indigo
+           dusk (matching the photo's own mountain-silhouette palette) with
+           just a hint of the photo's own warm horizon glow at the left,
+           rather than the crimson-heavy gradient this had before. -->
       <linearGradient id="duskSkyGrad" x1="0%" y1="20%" x2="100%" y2="0%">
-        <stop offset="0%"   stop-color="#8a1829"/>
-        <stop offset="14%"  stop-color="#b8382c"/>
-        <stop offset="28%"  stop-color="#d65d40"/>
-        <stop offset="42%"  stop-color="#aa486b"/>
-        <stop offset="58%"  stop-color="#69346d"/>
-        <stop offset="74%"  stop-color="#3c2656"/>
-        <stop offset="88%"  stop-color="#1d163a"/>
-        <stop offset="100%" stop-color="#0c0a22"/>
+        <stop offset="0%"   stop-color="#6b5163"/>
+        <stop offset="10%"  stop-color="#4a4a72"/>
+        <stop offset="22%"  stop-color="#2f3f75"/>
+        <stop offset="38%"  stop-color="#1f2f5e"/>
+        <stop offset="55%"  stop-color="#16234c"/>
+        <stop offset="72%"  stop-color="#10193c"/>
+        <stop offset="88%"  stop-color="#0a1129"/>
+        <stop offset="100%" stop-color="#05081a"/>
       </linearGradient>
 
-      <!-- Dying Sun: Sun hidden below horizon line with deep crimson and golden dusk glow -->
-      <radialGradient id="duskDyingSunsetHalo" cx="15%" cy="75%" r="60%">
-        <stop offset="0%" stop-color="#ff4a2b" stop-opacity="0.85"/>
-        <stop offset="25%" stop-color="#e63e26" stop-opacity="0.60"/>
-        <stop offset="55%" stop-color="#b82d38" stop-opacity="0.30"/>
-        <stop offset="85%" stop-color="#6c1d45" stop-opacity="0.08"/>
-        <stop offset="100%" stop-color="#6c1d45" stop-opacity="0"/>
+      <!-- Last light of the sun, echoing the photo's own glow at its left edge -->
+      <radialGradient id="duskGlowRadial" cx="20%" cy="85%" r="55%">
+        <stop offset="0%" stop-color="#ff8a5c" stop-opacity="0.55"/>
+        <stop offset="30%" stop-color="#e2684f" stop-opacity="0.3"/>
+        <stop offset="65%" stop-color="#8a4a5f" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="#8a4a5f" stop-opacity="0"/>
       </radialGradient>
-      
-      <linearGradient id="duskDyingRayGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-        <stop offset="0%" stop-color="#ff7b36" stop-opacity="0.45"/>
-        <stop offset="60%" stop-color="#e63e26" stop-opacity="0.18"/>
-        <stop offset="100%" stop-color="#b82d38" stop-opacity="0"/>
-      </linearGradient>
 
-      <!-- Realistic Moon: Luminous silver crescent with lunar surface texture -->
+      <!-- Crescent moon -->
       <linearGradient id="duskMoonGrad" x1="20%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="#ffffff"/>
         <stop offset="45%" stop-color="#f0f2ff"/>
@@ -771,257 +828,140 @@ def generate_dashboard_html(data):
         <stop offset="100%" stop-color="#9ea7d9"/>
       </linearGradient>
       <radialGradient id="duskMoonHalo" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#d6deff" stop-opacity="0.55"/>
-        <stop offset="40%" stop-color="#a8b8ff" stop-opacity="0.25"/>
+        <stop offset="0%" stop-color="#d6deff" stop-opacity="0.5"/>
+        <stop offset="40%" stop-color="#a8b8ff" stop-opacity="0.22"/>
         <stop offset="100%" stop-color="#8a99e6" stop-opacity="0"/>
       </radialGradient>
-      
-      <!-- Atmospheric Perspective Ridge Fills -->
-      <!-- Distant Mountain Ridge: Pale hazy indigo/violet with fog blur -->
-      <linearGradient id="farRidgeGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#766399"/>
-        <stop offset="100%" stop-color="#463768"/>
-      </linearGradient>
-      <!-- Mid Ridge: Deep violet with pine silhouette accents catching warm red rim-light on left -->
-      <linearGradient id="midRidgeGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#3d2c5c"/>
-        <stop offset="100%" stop-color="#23173d"/>
-      </linearGradient>
-      <!-- Near Ridge & Meadow: Rich dark violet-black valley soil -->
-      <linearGradient id="nearRidgeGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#1b122e"/>
-        <stop offset="100%" stop-color="#0b0716"/>
-      </linearGradient>
-      
-      <!-- Winding River Reflection -->
-      <linearGradient id="duskRiverGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#d65d40" stop-opacity="0.55"/>
-        <stop offset="40%" stop-color="#aa486b" stop-opacity="0.45"/>
-        <stop offset="100%" stop-color="#463768" stop-opacity="0.65"/>
-      </linearGradient>
 
-      <!-- Rim lighting gradient on left ridge edges -->
-      <linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#ff7b36" stop-opacity="0.95"/>
-        <stop offset="25%" stop-color="#e63e26" stop-opacity="0.65"/>
-        <stop offset="60%" stop-color="#b82d38" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="#69346d" stop-opacity="0"/>
-      </linearGradient>
-
-      <!-- Gaussian Blur Filters for Atmospheric Fog & Depth -->
       <filter id="duskBloom" x="-100%" y="-100%" width="300%" height="300%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="blur"/>
+        <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"/>
         <feMerge>
           <feMergeNode in="blur"/>
           <feMergeNode in="SourceGraphic"/>
         </feMerge>
       </filter>
-      <filter id="duskBlurSoft" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur stdDeviation="2"/>
-      </filter>
-      <filter id="duskBlurMed" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur stdDeviation="6"/>
-      </filter>
-      <filter id="duskBlurHaze" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur stdDeviation="16"/>
-      </filter>
 
-      <!-- Sparkle Glyph for Night Stars -->
-      <path id="duskSparkle" d="M0,-7 C0.7,-2.3 2.3,-0.7 7,0 C2.3,0.7 0.7,2.3 0,7 C-0.7,2.3 -2.3,0.7 -7,0 C-2.3,-0.7 -0.7,-2.3 0,-7 Z"/>
+      <path id="duskSparkle" d="M0,-6 C0.6,-2 2,-0.6 6,0 C2,0.6 0.6,2 0,6 C-0.6,2 -2,0.6 -6,0 C-2,-0.6 -0.6,-2 0,-6 Z"/>
 
-      <!-- Wildflower 1: Lupine / Lavender Spike (anchored at ground point 10,40) -->
-      <symbol id="duskLupine" viewBox="0 0 20 40">
-        <path d="M10,40 L10,12" stroke="#48683e" stroke-width="1.6" stroke-linecap="round"/>
-        <ellipse cx="10" cy="8" rx="2.5" ry="4" fill="#a484e8"/>
-        <ellipse cx="7" cy="13" rx="2.8" fill="#8862d8"/>
-        <ellipse cx="13" cy="13" rx="2.8" fill="#8862d8"/>
-        <ellipse cx="6" cy="19" rx="3.2" fill="#7248c8"/>
-        <ellipse cx="14" cy="19" rx="3.2" fill="#7248c8"/>
-        <ellipse cx="5" cy="25" rx="3.5" fill="#5f35b4"/>
-        <ellipse cx="15" cy="25" rx="3.5" fill="#5f35b4"/>
-        <path d="M10,32 Q5,28 3,31 Q8,34 10,32 Z" fill="#48683e"/>
-        <path d="M10,30 Q15,26 17,29 Q12,32 10,30 Z" fill="#48683e"/>
-      </symbol>
-
-      <!-- Wildflower 2: Red Poppy -->
-      <symbol id="duskPoppy" viewBox="0 0 22 34">
-        <path d="M11,34 Q9,22 11,14" fill="none" stroke="#426038" stroke-width="1.5" stroke-linecap="round"/>
-        <g>
-          <path d="M11,14 C6,6 2,12 11,14 Z" fill="#e63e26" opacity="0.95"/>
-          <path d="M11,14 C16,6 20,12 11,14 Z" fill="#e63e26" opacity="0.95"/>
-          <path d="M11,14 C4,10 8,2 11,14 Z" fill="#ff5c42" opacity="0.9"/>
-          <path d="M11,14 C18,10 14,2 11,14 Z" fill="#ff5c42" opacity="0.9"/>
-        </g>
-        <circle cx="11" cy="14" r="2.2" fill="#201018"/>
-      </symbol>
-
-      <!-- Wildflower 3: White Daisy -->
-      <symbol id="duskDaisy" viewBox="0 0 20 32">
-        <path d="M10,32 Q11,20 10,12" fill="none" stroke="#48683e" stroke-width="1.4"/>
-        <g>
-          <ellipse cx="10" cy="5" rx="1.6" ry="4.5" fill="#f5f0fb"/>
-          <ellipse cx="10" cy="19" rx="1.6" ry="4.5" fill="#f5f0fb"/>
-          <ellipse cx="3" cy="12" rx="4.5" ry="1.6" fill="#f5f0fb"/>
-          <ellipse cx="17" cy="12" rx="4.5" ry="1.6" fill="#f5f0fb"/>
-          <ellipse cx="5" cy="7" rx="4" ry="1.6" fill="#eae2f8" transform="rotate(-45 5 7)"/>
-          <ellipse cx="15" cy="17" rx="4" ry="1.6" fill="#eae2f8" transform="rotate(-45 15 17)"/>
-          <ellipse cx="15" cy="7" rx="4" ry="1.6" fill="#eae2f8" transform="rotate(45 15 7)"/>
-          <ellipse cx="5" cy="17" rx="4" ry="1.6" fill="#eae2f8" transform="rotate(45 5 17)"/>
-        </g>
-        <circle cx="10" cy="12" r="2.4" fill="#ffc247"/>
-      </symbol>
-
-      <!-- Realistic Butterfly Symbol -->
-      <symbol id="duskButterfly" viewBox="0 0 28 22">
-        <g class="dusk-butterfly-body">
-          <path d="M12.5,6 Q11,3.5 12,2.5" fill="none" stroke="#251a36" stroke-width="0.7" stroke-linecap="round"/>
-          <path d="M15.5,6 Q17,3.5 16,2.5" fill="none" stroke="#251a36" stroke-width="0.7" stroke-linecap="round"/>
-          <g class="dusk-wing-l">
-            <path d="M14,11 C9.5,2 2,3.5 3.5,10 C2,13.5 7.5,14.5 14,11 Z" fill="currentColor" opacity="0.95"/>
-            <path d="M14,11 C10.5,14 6,19 8.5,20 C11.5,19 14,14.5 14,11 Z" fill="currentColor" opacity="0.75"/>
-            <circle cx="7" cy="7.5" r="1.1" fill="#fffdf5" opacity="0.7"/>
-          </g>
-          <g class="dusk-wing-r">
-            <path d="M14,11 C18.5,2 26,3.5 24.5,10 C26,13.5 20.5,14.5 14,11 Z" fill="currentColor" opacity="0.95"/>
-            <path d="M14,11 C17.5,14 22,19 19.5,20 C16.5,19 14,14.5 14,11 Z" fill="currentColor" opacity="0.75"/>
-            <circle cx="21" cy="7.5" r="1.1" fill="#fffdf5" opacity="0.7"/>
-          </g>
-          <ellipse cx="14" cy="11" rx="1.2" ry="4.8" fill="#201530"/>
-        </g>
-      </symbol>
-
-      <!-- Realistic Wild Rabbit Symbol (Anatomically detailed sitting posture) -->
-      <symbol id="duskRabbit" viewBox="0 0 36 30">
-        <!-- Fluffy tail -->
-        <ellipse cx="4.5" cy="22" rx="2.5" ry="2.2" fill="#d9cbdf" opacity="0.9"/>
-        <!-- Hind leg / thigh curve -->
-        <path d="M6,25 C3,18 7,12 16,12 C24,12 30,17 29,23 C28,27 22,29 15,29 C9,29 6.5,27.5 6,25 Z" fill="#302343"/>
-        <!-- Soft inner fur shadow -->
-        <path d="M12,27 C8,27 7,24.5 9,21 C12,16 18,16 22,21 C24,24.5 20,27 12,27 Z" fill="#231834" opacity="0.6"/>
-        <!-- Perked ears with realistic pinkish interior fill -->
-        <path d="M20,6 C18.5,-2 21,-4.5 23.5,3.5 C23,6 21.5,7 20,6 Z" fill="#302343"/>
-        <path d="M25.5,5 C26.8,-2.5 29.2,-3.5 29.2,4 C28.5,6.5 27,6.8 25.5,5 Z" fill="#302343"/>
-        <path d="M21,3.5 C20.2,-0.5 21.8,-2 23,2.5" fill="#e8b8c8" opacity="0.45"/>
-        <path d="M26.5,3 C27.3,-0.8 28.5,-1.5 28,2.8" fill="#e8b8c8" opacity="0.45"/>
-        <!-- Rabbit Head & Eye -->
-        <circle cx="24.5" cy="10" r="5" fill="#302343"/>
-        <circle cx="26.8" cy="8.8" r="0.8" fill="#0c0714"/>
-        <circle cx="27" cy="8.6" r="0.25" fill="#ffffff" opacity="0.8"/>
-        <!-- Sniffing nose -->
-        <path d="M28.8,10.2 Q29.8,10.5 29.2,11.2" stroke="#e8b8c8" stroke-width="0.6" fill="none"/>
-      </symbol>
+      <!-- Shooting-star trail: bright head at (0,0) fading to nothing at
+           the tail end -- userSpaceOnUse so it lines up exactly with the
+           line's own local coordinates regardless of bounding-box quirks. -->
+      <linearGradient id="shootingStarGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="-46" y2="-15">
+        <stop offset="0%"  stop-color="#ffffff" stop-opacity="0.95"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </linearGradient>
     </defs>
 
-    <!-- 1. Sky Base -->
+    <!-- Sky: fills the whole backdrop, so it's the "free space" color
+         wherever dusk_valley.png (below, in HTML) doesn't cover. -->
     <rect x="0" y="0" width="1600" height="850" fill="url(#duskSkyGrad)"/>
 
-    <!-- 2. Stars on the Right Twilight Sky -->
-    <g class="dusk-stars">
-      <circle class="dusk-star" cx="980"  cy="85"  r="1.4" fill="#fbfaff" style="animation-delay:-0.5s"/>
-      <circle class="dusk-star" cx="1060" cy="140" r="1.1" fill="#fbfaff" style="animation-delay:-2.1s"/>
-      <circle class="dusk-star" cx="1140" cy="65"  r="1.6" fill="#fbfaff" style="animation-delay:-1.2s"/>
-      <circle class="dusk-star" cx="1220" cy="125" r="1.2" fill="#fbfaff" style="animation-delay:-2.8s"/>
-      <circle class="dusk-star" cx="1290" cy="45"  r="1.5" fill="#fbfaff" style="animation-delay:-1.5s"/>
-      <circle class="dusk-star" cx="1370" cy="155" r="1.1" fill="#fbfaff" style="animation-delay:-3.2s"/>
-      <circle class="dusk-star" cx="1460" cy="85"  r="1.7" fill="#fbfaff" style="animation-delay:-0.4s"/>
-      <circle class="dusk-star" cx="1520" cy="165" r="1.1" fill="#fbfaff" style="animation-delay:-1.9s"/>
-      <circle class="dusk-star" cx="1570" cy="95"  r="1.4" fill="#fbfaff" style="animation-delay:-2.5s"/>
-      <circle class="dusk-star" cx="910"  cy="175" r="1.0" fill="#fbfaff" style="animation-delay:-3.6s"/>
-      <circle class="dusk-star" cx="1190" cy="205" r="1.1" fill="#fbfaff" style="animation-delay:-0.8s"/>
-      <use class="dusk-star" href="#duskSparkle" transform="translate(1320,175) scale(0.85)" fill="#ffffff" style="animation-delay:-1.4s"/>
-      <use class="dusk-star" href="#duskSparkle" transform="translate(1495,120) scale(0.65)" fill="#ffffff" style="animation-delay:-2.7s"/>
+    <!-- Stars: a wide jittered field across the whole sky (was clustered
+         upper-right before) plus a few brighter sparkle accents. -->
+    <g>
+      <circle class="dusk-star" cx="48.5" cy="65.4" r="0.7" fill="#fbfaff" style="animation-duration:3.2s;animation-delay:-3.5s"/>
+      <circle class="dusk-star" cx="107.7" cy="117.5" r="0.7" fill="#fbfaff" style="animation-duration:3.2s;animation-delay:-1.9s"/>
+      <circle class="dusk-star" cx="101.2" cy="262.7" r="0.9" fill="#fbfaff" style="animation-duration:4.3s;animation-delay:-2.7s"/>
+      <circle class="dusk-star" cx="40.6" cy="417.9" r="1.7" fill="#fbfaff" style="animation-duration:3.6s;animation-delay:-3.6s"/>
+      <circle class="dusk-star" cx="211.8" cy="190.7" r="0.9" fill="#fbfaff" style="animation-duration:4.2s;animation-delay:-1.7s"/>
+      <circle class="dusk-star" cx="292.9" cy="47.7" r="1.5" fill="#fbfaff" style="animation-duration:3.5s;animation-delay:-1.6s"/>
+      <circle class="dusk-star" cx="266.0" cy="197.0" r="1.5" fill="#fbfaff" style="animation-duration:4.6s;animation-delay:-3.7s"/>
+      <circle class="dusk-star" cx="336.0" cy="262.4" r="1.3" fill="#fbfaff" style="animation-duration:3.8s;animation-delay:-0.9s"/>
+      <circle class="dusk-star" cx="292.5" cy="381.8" r="0.7" fill="#fbfaff" style="animation-duration:4.3s;animation-delay:-3.3s"/>
+      <circle class="dusk-star" cx="284.0" cy="442.8" r="1.5" fill="#fbfaff" style="animation-duration:4.0s;animation-delay:-2.5s"/>
+      <circle class="dusk-star" cx="444.7" cy="56.1" r="0.7" fill="#fbfaff" style="animation-duration:4.5s;animation-delay:-0.4s"/>
+      <circle class="dusk-star" cx="448.5" cy="149.4" r="1.0" fill="#fbfaff" style="animation-duration:5.0s;animation-delay:-3.1s"/>
+      <circle class="dusk-star" cx="444.4" cy="199.9" r="0.7" fill="#fbfaff" style="animation-duration:3.5s;animation-delay:-2.2s"/>
+      <circle class="dusk-star" cx="428.6" cy="277.1" r="1.5" fill="#fbfaff" style="animation-duration:4.0s;animation-delay:-0.5s"/>
+      <circle class="dusk-star" cx="439.9" cy="374.3" r="1.7" fill="#fbfaff" style="animation-duration:3.9s;animation-delay:-1.3s"/>
+      <circle class="dusk-star" cx="440.0" cy="456.5" r="0.8" fill="#fbfaff" style="animation-duration:3.3s;animation-delay:-0.5s"/>
+      <circle class="dusk-star" cx="483.4" cy="74.9" r="0.8" fill="#fbfaff" style="animation-duration:3.0s;animation-delay:-1.3s"/>
+      <circle class="dusk-star" cx="511.2" cy="136.0" r="0.8" fill="#fbfaff" style="animation-duration:4.1s;animation-delay:-3.0s"/>
+      <circle class="dusk-star" cx="535.2" cy="184.1" r="1.7" fill="#fbfaff" style="animation-duration:3.9s;animation-delay:-1.8s"/>
+      <circle class="dusk-star" cx="487.3" cy="334.8" r="0.9" fill="#fbfaff" style="animation-duration:3.2s;animation-delay:-2.0s"/>
+      <circle class="dusk-star" cx="490.4" cy="436.0" r="1.7" fill="#fbfaff" style="animation-duration:3.8s;animation-delay:-0.6s"/>
+      <circle class="dusk-star" cx="641.8" cy="114.0" r="1.0" fill="#fbfaff" style="animation-duration:4.3s;animation-delay:-4.0s"/>
+      <circle class="dusk-star" cx="602.9" cy="206.9" r="1.5" fill="#fbfaff" style="animation-duration:3.7s;animation-delay:-2.1s"/>
+      <circle class="dusk-star" cx="651.6" cy="356.4" r="0.8" fill="#fbfaff" style="animation-duration:3.5s;animation-delay:-2.3s"/>
+      <circle class="dusk-star" cx="622.1" cy="442.5" r="0.6" fill="#fbfaff" style="animation-duration:3.7s;animation-delay:-3.2s"/>
+      <circle class="dusk-star" cx="712.4" cy="75.6" r="1.7" fill="#fbfaff" style="animation-duration:3.4s;animation-delay:-1.7s"/>
+      <circle class="dusk-star" cx="746.8" cy="147.2" r="1.1" fill="#fbfaff" style="animation-duration:4.3s;animation-delay:-2.7s"/>
+      <circle class="dusk-star" cx="764.4" cy="191.5" r="0.9" fill="#fbfaff" style="animation-duration:4.6s;animation-delay:-3.5s"/>
+      <circle class="dusk-star" cx="745.7" cy="274.9" r="0.6" fill="#fbfaff" style="animation-duration:4.7s;animation-delay:-4.2s"/>
+      <circle class="dusk-star" cx="720.4" cy="363.0" r="1.1" fill="#fbfaff" style="animation-duration:5.1s;animation-delay:-2.0s"/>
+      <circle class="dusk-star" cx="779.8" cy="425.4" r="0.9" fill="#fbfaff" style="animation-duration:4.0s;animation-delay:-0.6s"/>
+      <circle class="dusk-star" cx="854.4" cy="83.0" r="0.6" fill="#fbfaff" style="animation-duration:4.4s;animation-delay:-2.1s"/>
+      <circle class="dusk-star" cx="823.3" cy="140.9" r="1.3" fill="#fbfaff" style="animation-duration:4.7s;animation-delay:-3.3s"/>
+      <circle class="dusk-star" cx="830.6" cy="222.7" r="1.1" fill="#fbfaff" style="animation-duration:5.1s;animation-delay:-0.5s"/>
+      <circle class="dusk-star" cx="852.8" cy="295.3" r="0.7" fill="#fbfaff" style="animation-duration:3.4s;animation-delay:-3.1s"/>
+      <circle class="dusk-star" cx="991.1" cy="38.9" r="1.5" fill="#fbfaff" style="animation-duration:3.8s;animation-delay:-2.8s"/>
+      <circle class="dusk-star" cx="938.4" cy="107.0" r="0.7" fill="#fbfaff" style="animation-duration:5.1s;animation-delay:-2.3s"/>
+      <circle class="dusk-star" cx="996.1" cy="224.6" r="0.9" fill="#fbfaff" style="animation-duration:3.5s;animation-delay:-0.3s"/>
+      <circle class="dusk-star" cx="987.7" cy="273.4" r="1.7" fill="#fbfaff" style="animation-duration:3.3s;animation-delay:-1.9s"/>
+      <circle class="dusk-star" cx="955.7" cy="355.3" r="1.7" fill="#fbfaff" style="animation-duration:5.0s;animation-delay:-1.9s"/>
+      <circle class="dusk-star" cx="969.6" cy="433.7" r="0.6" fill="#fbfaff" style="animation-duration:4.7s;animation-delay:-3.7s"/>
+      <circle class="dusk-star" cx="1108.5" cy="334.2" r="0.9" fill="#fbfaff" style="animation-duration:4.7s;animation-delay:-1.3s"/>
+      <circle class="dusk-star" cx="1083.4" cy="446.1" r="0.7" fill="#fbfaff" style="animation-duration:4.3s;animation-delay:-2.0s"/>
+      <circle class="dusk-star" cx="1216.5" cy="338.4" r="0.7" fill="#fbfaff" style="animation-duration:3.7s;animation-delay:-1.8s"/>
+      <circle class="dusk-star" cx="1184.4" cy="417.4" r="1.0" fill="#fbfaff" style="animation-duration:5.0s;animation-delay:-3.3s"/>
+      <circle class="dusk-star" cx="1327.4" cy="339.7" r="1.3" fill="#fbfaff" style="animation-duration:3.9s;animation-delay:-4.2s"/>
+      <circle class="dusk-star" cx="1290.2" cy="411.1" r="1.1" fill="#fbfaff" style="animation-duration:4.2s;animation-delay:-0.3s"/>
+      <circle class="dusk-star" cx="1375.3" cy="48.7" r="1.0" fill="#fbfaff" style="animation-duration:3.1s;animation-delay:-2.2s"/>
+      <circle class="dusk-star" cx="1435.3" cy="157.3" r="0.7" fill="#fbfaff" style="animation-duration:3.6s;animation-delay:-0.5s"/>
+      <circle class="dusk-star" cx="1388.0" cy="220.9" r="1.3" fill="#fbfaff" style="animation-duration:4.5s;animation-delay:-3.6s"/>
+      <circle class="dusk-star" cx="1405.5" cy="284.4" r="1.7" fill="#fbfaff" style="animation-duration:4.5s;animation-delay:-2.5s"/>
+      <circle class="dusk-star" cx="1518.5" cy="35.1" r="0.6" fill="#fbfaff" style="animation-duration:4.8s;animation-delay:-2.7s"/>
+      <circle class="dusk-star" cx="1490.5" cy="226.5" r="1.5" fill="#fbfaff" style="animation-duration:5.2s;animation-delay:-0.2s"/>
+      <circle class="dusk-star" cx="1556.7" cy="288.9" r="0.6" fill="#fbfaff" style="animation-duration:3.5s;animation-delay:-2.3s"/>
+      <use class="dusk-star" href="#duskSparkle" transform="translate(340,140) scale(0.75)" fill="#ffffff" style="animation-delay:-1.4s"/>
+      <use class="dusk-star" href="#duskSparkle" transform="translate(850,340) scale(0.55)" fill="#ffffff" style="animation-delay:-2.7s"/>
+      <use class="dusk-star" href="#duskSparkle" transform="translate(1500,300) scale(0.7)" fill="#ffffff" style="animation-delay:-3.3s"/>
     </g>
 
-    <!-- 3. Dying Crimson Sunset Rays (Sun hidden below mountain horizon on left) -->
-    <circle class="dusk-dying-glow" cx="180" cy="590" r="320" fill="url(#duskDyingSunsetHalo)"/>
-    <g class="dusk-dying-rays" transform="translate(180,580)" opacity="0.6" filter="url(#duskBlurMed)">
-      <rect x="-6" y="-300" width="12" height="300" fill="url(#duskDyingRayGrad)" transform="rotate(-38)"/>
-      <rect x="-4" y="-270" width="8"  height="270" fill="url(#duskDyingRayGrad)" transform="rotate(-18)"/>
-      <rect x="-5" y="-280" width="10" height="280" fill="url(#duskDyingRayGrad)" transform="rotate(8)"/>
-      <rect x="-6" y="-250" width="12" height="250" fill="url(#duskDyingRayGrad)" transform="rotate(28)"/>
-      <rect x="-3" y="-220" width="6"  height="220" fill="url(#duskDyingRayGrad)" transform="rotate(48)"/>
+    <!-- Shooting stars: rare, staggered streaks -- each spends ~90% of its
+         cycle invisible, so they read as occasional rather than periodic.
+         Base position is a static attribute transform on the outer <g> (a
+         CSS animation on transform replaces an element's own attribute
+         transform rather than composing with it, so the moving part has to
+         be a child, not the same element). -->
+    <g transform="translate(230,90)">
+      <line class="dusk-shooting-star" x1="0" y1="0" x2="-46" y2="-15"
+            stroke="url(#shootingStarGrad)" stroke-width="2" stroke-linecap="round" style="animation-duration:19s;animation-delay:-6s"/>
+    </g>
+    <g transform="translate(920,55)">
+      <line class="dusk-shooting-star" x1="0" y1="0" x2="-46" y2="-15"
+            stroke="url(#shootingStarGrad)" stroke-width="1.6" stroke-linecap="round" style="animation-duration:23s;animation-delay:-14s"/>
+    </g>
+    <g transform="translate(60,320)">
+      <line class="dusk-shooting-star" x1="0" y1="0" x2="-46" y2="-15"
+            stroke="url(#shootingStarGrad)" stroke-width="1.8" stroke-linecap="round" style="animation-duration:26s;animation-delay:-9s"/>
     </g>
 
-    <!-- 4. Realistic Moon (Right Sky) -->
-    <circle class="dusk-dying-glow" cx="1360" cy="140" r="140" fill="url(#duskMoonHalo)" style="animation-delay:-3.5s"/>
-    <!-- Crescent Moon Path -->
-    <path d="M1395,95 a50,50 0 1 0 4,82 a40,40 0 0 1 -4,-82 z" fill="url(#duskMoonGrad)" filter="url(#duskBloom)"/>
+    <!-- Last light at the horizon, aligned above the photo's own warm glow
+         on its left peak. -->
+    <circle class="dusk-glow" cx="115" cy="700" r="250" fill="url(#duskGlowRadial)"/>
 
-    <!-- 5. Distant Mountain Ridge (Pale indigo atmospheric depth haze) -->
-    <path d="M0,520 C140,480 220,500 340,450 C440,410 520,460 620,420 C720,380 820,430 920,390 C1020,350 1120,410 1220,380 C1340,340 1460,400 1600,370 L1600,850 L0,850 Z"
-          fill="url(#farRidgeGrad)" opacity="0.55" filter="url(#duskBlurSoft)"/>
-
-    <!-- 6. Mid Mountain Ridge (Shaping valley & pine forest silhouettes) -->
-    <path d="M0,590 C160,540 280,570 400,530 C500,500 580,560 670,540 C720,530 740,580 780,610 C820,630 850,570 890,540 C980,500 1080,560 1180,530 C1300,490 1420,550 1600,525 L1600,850 L0,850 Z"
-          fill="url(#midRidgeGrad)" opacity="0.9"/>
-    
-    <!-- Warm rim light on left mountain peaks from dying sunset -->
-    <path class="dusk-rim" d="M0,590 C160,540 280,570 400,530 C500,500 580,560 670,540"
-          fill="none" stroke="url(#rimGrad)" stroke-width="4.5" stroke-linecap="round" filter="url(#duskBlurMed)" opacity="0.75"/>
-
-    <!-- 7. Winding Valley River Stream reflecting sky -->
-    <path d="M720,605 C710,630 735,660 760,680 C790,705 840,715 880,740 C910,760 930,790 940,850 L890,850 C880,800 860,775 830,755 C790,730 740,715 710,690 C690,670 675,640 685,615 Z"
-          fill="url(#duskRiverGrad)"/>
-
-    <!-- 8. Atmospheric Drifting Mist / Fog Layers -->
-    <ellipse class="dusk-fog" cx="380" cy="540" rx="200" ry="18" fill="#d65d40" opacity="0.12" filter="url(#duskBlurHaze)"/>
-    <ellipse class="dusk-fog alt" cx="1120" cy="500" rx="220" ry="22" fill="#aa486b" opacity="0.15" filter="url(#duskBlurHaze)"/>
-
-    <!-- 9. Near Mountain Ridge & Valley Floor -->
-    <path d="M0,670 C200,625 340,665 480,620 C580,588 670,655 780,625 C850,605 920,660 1000,630 C1100,595 1220,655 1340,620 C1440,592 1540,645 1600,618 L1600,850 L0,850 Z"
-          fill="url(#nearRidgeGrad)"/>
-
-    <!-- Dirt Path curving through meadow into the valley -->
-    <path d="M460,850 C490,800 520,770 560,750 C600,730 650,720 680,690 C700,670 705,640 710,620"
-          fill="none" stroke="#2a1d3b" stroke-width="16" stroke-linecap="round" opacity="0.75"/>
-    <path d="M460,850 C490,800 520,770 560,750 C600,730 650,720 680,690 C700,670 705,640 710,620"
-          fill="none" stroke="#3b2b4f" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
-
-    <!-- 10. Meadow Flowers (Rich Lupin, Poppy, Daisy, Bluebell clusters) -->
-    <!-- Left Meadow Cluster -->
-    <use href="#duskLupine" class="dusk-flower" x="65"  y="740" width="20" height="40" style="animation-delay:-0.4s"/>
-    <use href="#duskLupine" class="dusk-flower" x="90"  y="750" width="20" height="40" style="animation-delay:-1.8s"/>
-    <use href="#duskPoppy"  class="dusk-flower" x="145" y="755" width="22" height="34" style="animation-delay:-2.5s"/>
-    <use href="#duskDaisy"  class="dusk-flower" x="180" y="760" width="20" height="32" style="animation-delay:-1.1s"/>
-    <use href="#duskLupine" class="dusk-flower" x="220" y="745" width="20" height="40" style="animation-delay:-3.2s"/>
-    <use href="#duskPoppy"  class="dusk-flower" x="270" y="765" width="22" height="34" style="animation-delay:-0.9s"/>
-    
-    <!-- Center Meadow Cluster -->
-    <use href="#duskDaisy"  class="dusk-flower" x="340" y="770" width="20" height="32" style="animation-delay:-2.7s"/>
-    <use href="#duskLupine" class="dusk-flower" x="500" y="765" width="20" height="40" style="animation-delay:-1.4s"/>
-    <use href="#duskPoppy"  class="dusk-flower" x="545" y="775" width="22" height="34" style="animation-delay:-4.1s"/>
-    
-    <!-- Right Meadow Cluster -->
-    <use href="#duskLupine" class="dusk-flower" x="980"  y="755" width="20" height="40" style="animation-delay:-0.7s"/>
-    <use href="#duskDaisy"  class="dusk-flower" x="1030" y="765" width="20" height="32" style="animation-delay:-2.3s"/>
-    <use href="#duskPoppy"  class="dusk-flower" x="1080" y="760" width="22" height="34" style="animation-delay:-1.6s"/>
-    <use href="#duskLupine" class="dusk-flower" x="1140" y="745" width="20" height="40" style="animation-delay:-3.5s"/>
-    <use href="#duskDaisy"  class="dusk-flower" x="1200" y="770" width="20" height="32" style="animation-delay:-0.3s"/>
-    <use href="#duskPoppy"  class="dusk-flower" x="1270" y="755" width="22" height="34" style="animation-delay:-2.9s"/>
-
-    <!-- 11. Subtle Flying Butterflies (Monarch orange/black & Morpho blue) -->
-    <use href="#duskButterfly" class="dusk-butterfly"     x="210" y="660" width="28" height="22" color="#e63e26" style="animation-delay:-5s"/>
-    <use href="#duskButterfly" class="dusk-butterfly alt" x="610" y="640" width="28" height="22" color="#8862d8" style="animation-delay:-12s"/>
-    <use href="#duskButterfly" class="dusk-butterfly"     x="1050" y="670" width="28" height="22" color="#ff7b36" style="animation-delay:-18s"/>
-
-    <!-- 12. 2 Realistic Wild Rabbits Resting / Hopping in the Meadow -->
-    <!-- Rabbit 1: Resting peacefully in left meadow grass -->
-    <ellipse class="dusk-rabbit-shadow" cx="396" cy="774" rx="14" ry="3.2" fill="#05030a" style="animation-delay:-2s"/>
-    <use href="#duskRabbit" class="dusk-rabbit" x="378" y="746" width="36" height="30" style="animation-delay:-2s"/>
-
-    <!-- Rabbit 2: Resting near center pathway -->
-    <ellipse class="dusk-rabbit-shadow" cx="446" cy="784" rx="14" ry="3.2" fill="#05030a" style="animation-delay:-7s"/>
-    <use href="#duskRabbit" class="dusk-rabbit" x="428" y="756" width="36" height="30" style="animation-delay:-7s"/>
-
-    <!-- 13. Floating Ambient Light Dust Motes -->
-    <circle class="dusk-mote" cx="240" cy="720" r="1.5" fill="#ffb86c" style="animation-delay:-1s"/>
-    <circle class="dusk-mote" cx="420" cy="700" r="2.0" fill="#f0e6ff" style="animation-delay:-5s"/>
-    <circle class="dusk-mote" cx="680" cy="680" r="1.2" fill="#ff7b36" style="animation-delay:-9s"/>
-    <circle class="dusk-mote" cx="1090" cy="710" r="1.8" fill="#ffb86c" style="animation-delay:-3s"/>
-    <circle class="dusk-mote" cx="1260" cy="690" r="1.4" fill="#f0e6ff" style="animation-delay:-7s"/>
-  </svg>
+    <!-- Crescent moon: upper-right, clear of the photo's tallest (right-side)
+         peaks and away from the horizon glow. -->
+    <circle class="dusk-glow" cx="1180" cy="150" r="130" fill="url(#duskMoonHalo)" style="animation-delay:-3.5s"/>
+    <path d="M1213,107 a46,46 0 1 0 4,76 a37,37 0 0 1 -4,-76 z" fill="url(#duskMoonGrad)" filter="url(#duskBloom)"/>
+    </svg>
   </div>
+  <!-- The real photo: a public-domain-style dusk meadow/valley the user
+       supplied, cleaned up (its "transparent" top was actually a baked-in
+       checkerboard, not real alpha -- rebuilt with a true alpha channel by
+       flood-filling that region) and cropped to just the opaque artwork.
+       Anchored to the bottom, full width, so it naturally fills roughly the
+       lower half of the viewport while the coded sky above shows through
+       and around it. -->
+  <img class="dusk-valley-img" src="dusk_valley.png" alt="Dusk mountain valley with a winding river, framed by wildflowers">
 </div>
+
+<!-- Butterflies: real DOM elements roaming above the cards, ported from
+     kabyik.dev's own header (see the <script> below). Kept out of
+     .dusk-backdrop-container so its z-index isn't capped by that
+     container's own stacking context. -->
+<div class="butterflies-container"></div>
 
 <div class="container">
 
@@ -1141,6 +1081,321 @@ def generate_dashboard_html(data):
 </div>
 
 <script>
+  // Butterflies -- shapes/wing-flap/colors adapted from kabyik.dev's own
+  // js/butterflies.js (css/header.css); the flight path is a fresh wander
+  // model rather than that source's sine-wave path (which, being tuned for
+  // a short header, read as fast/jittery on a full-page container). Each
+  // butterfly drifts slowly toward a random point, rests a moment on
+  // arrival, then picks a new point -- no periodic wave to notice, and an
+  // `active` flag so requestAnimationFrame loops stop cleanly when the
+  // theme switches away (the source site never tears this down, since it's
+  // a permanent header).
+  class Butterfly {{
+    constructor(container, id, color) {{
+      this.container = container;
+      this.id = id;
+      this.active = true;
+      this.element = this.createButterfly();
+
+      const isMobile = window.innerWidth <= 968;
+      this.scale = isMobile ? (0.6 + Math.random() * 0.8) : (0.85 + Math.random() * 0.55);
+
+      // Dim, calm colors -- assigned by the manager so no two butterflies
+      // on screen at once share a color.
+      this.color = color;
+
+      // Slow, pleasant drift speed in pixels/frame (~60fps).
+      this.speed = 0.18 + Math.random() * 0.22;
+      this.rotationLerp = 0.03 + Math.random() * 0.02;
+      this.rotation = 0;
+
+      // Gentle organic wobble layered on top of the straight-line heading,
+      // so the path curves softly instead of being a ruler-straight lerp.
+      this.wanderAngle = Math.random() * Math.PI * 2;
+      this.wanderSpeed = 0.01 + Math.random() * 0.01;
+      this.wanderStrength = 0.25 + Math.random() * 0.2;
+
+      // A light hover bob, in pixels (kept intentionally subtle).
+      this.bobPhase = Math.random() * Math.PI * 2;
+      this.bobAmount = 2 + Math.random() * 2;
+      this.bobOffset = 0;
+
+      // Rest a while after arriving at each point before choosing the next.
+      this.restMin = 2500;
+      this.restMax = 7000;
+      this.isResting = true;
+      this.restUntil = performance.now() + Math.random() * 2500;
+
+      this.position = {{ x: 0, y: 0 }};
+      this.targetPosition = {{ x: 0, y: 0 }};
+
+      this.setInitialPosition();
+      this.applyColor();
+      this.setupSmoothFlapAnimation();
+      this.container.appendChild(this.element);
+
+      this.element.style.opacity = 0;
+      setTimeout(() => {{
+        if (!this.active) return;
+        this.element.style.transition = 'opacity 0.8s ease-out';
+        this.element.style.opacity = 1;
+        this.animate();
+      }}, 300 + Math.random() * 1500);
+    }}
+
+    // Where dusk_valley.png's own wildflowers actually sit: a band hugging
+    // the bottom of the viewport (the photo is bottom-anchored, and its
+    // flowers are in roughly the bottom third of the image itself). Rest
+    // targets are restricted to this band so butterflies only land on
+    // flowers -- the wander wobble can still carry them up through the sky
+    // between two flower-band points, which reads as natural flitting.
+    getFlowerBand() {{
+      const w = this.container.offsetWidth || window.innerWidth;
+      const h = this.container.offsetHeight || window.innerHeight;
+      return {{
+        minX: w * 0.03, maxX: w * 0.97,
+        minY: h * 0.82, maxY: h * 0.97,
+      }};
+    }}
+
+    setInitialPosition() {{
+      const b = this.getFlowerBand();
+      this.position.x = b.minX + Math.random() * (b.maxX - b.minX);
+      this.position.y = b.minY + Math.random() * (b.maxY - b.minY);
+      this.targetPosition.x = this.position.x;
+      this.targetPosition.y = this.position.y;
+    }}
+
+    pickNewTarget() {{
+      const b = this.getFlowerBand();
+      // Favor a reasonably long hop so the drift stays visible, without
+      // forcing every trip to be a full screen crossing.
+      const spanX = b.maxX - b.minX;
+      const spanY = b.maxY - b.minY;
+      let tx, ty, tries = 0;
+      do {{
+        tx = b.minX + Math.random() * spanX;
+        ty = b.minY + Math.random() * spanY;
+        tries++;
+      }} while (tries < 6 && Math.hypot(tx - this.position.x, ty - this.position.y) < spanX * 0.15);
+      this.targetPosition.x = tx;
+      this.targetPosition.y = ty;
+    }}
+
+    createButterfly() {{
+      const butterfly = document.createElement('div');
+      butterfly.className = `butterfly butterfly-${{this.id}}`;
+      butterfly.style.transform = `scale(${{this.scale}})`;
+
+      const body = document.createElement('div');
+      body.className = 'butterfly-body';
+
+      const antennaLeft = document.createElement('div');
+      antennaLeft.className = 'butterfly-antenna butterfly-antenna-left';
+      const antennaRight = document.createElement('div');
+      antennaRight.className = 'butterfly-antenna butterfly-antenna-right';
+
+      body.appendChild(antennaLeft);
+      body.appendChild(antennaRight);
+
+      const wingsContainer = document.createElement('div');
+      wingsContainer.className = 'butterfly-wings';
+
+      const wingLeft = document.createElement('div');
+      wingLeft.className = 'butterfly-wing butterfly-wing-left';
+      const patternLeft = document.createElement('div');
+      patternLeft.className = 'wing-pattern';
+      wingLeft.appendChild(patternLeft);
+
+      const wingRight = document.createElement('div');
+      wingRight.className = 'butterfly-wing butterfly-wing-right';
+      const patternRight = document.createElement('div');
+      patternRight.className = 'wing-pattern';
+      wingRight.appendChild(patternRight);
+
+      wingsContainer.appendChild(wingLeft);
+      wingsContainer.appendChild(wingRight);
+
+      butterfly.appendChild(body);
+      butterfly.appendChild(wingsContainer);
+
+      return butterfly;
+    }}
+
+    applyColor() {{
+      const body = this.element.querySelector('.butterfly-body');
+      if (body) {{
+        body.style.background = `linear-gradient(to bottom, ${{this.color}}, ${{this.color}})`;
+      }}
+
+      const antennas = this.element.querySelectorAll('.butterfly-antenna');
+      antennas.forEach(antenna => {{
+        antenna.style.background = this.color;
+      }});
+
+      const wings = this.element.querySelectorAll('.butterfly-wing');
+      wings.forEach(wing => {{
+        wing.style.background = this.color;
+      }});
+
+      if (body) {{
+        body.style.setProperty('--body-color', this.color);
+      }}
+    }}
+
+    setupSmoothFlapAnimation() {{
+      const wings = this.element.querySelectorAll('.butterfly-wing');
+      let flapPhase = Math.random() * Math.PI * 2;
+
+      const flap = () => {{
+        if (!this.active) return;
+        flapPhase += this.isResting ? 0.05 : 0.10;
+        const flapAmount = Math.sin(flapPhase);
+        const flapIntensity = this.isResting ? 0.45 : 1.0;
+        const smoothFlapAmount = flapAmount * flapIntensity;
+
+        wings.forEach((wing, index) => {{
+          const isLeft = index === 0;
+          const baseRotateZ = isLeft ? -2 : 2;
+
+          const rotateY = smoothFlapAmount * (isLeft ? -55 : 55);
+          const rotateZ = baseRotateZ + smoothFlapAmount * (isLeft ? -6 : 6);
+
+          wing.style.transform = `rotateY(${{rotateY}}deg) rotateZ(${{rotateZ}}deg)`;
+        }});
+
+        requestAnimationFrame(flap);
+      }};
+
+      flap();
+    }}
+
+    animate() {{
+      const update = () => {{
+        if (!this.active) return;
+        const now = performance.now();
+
+        if (this.isResting) {{
+          if (now >= this.restUntil) {{
+            this.isResting = false;
+            this.pickNewTarget();
+          }}
+        }} else {{
+          const dx = this.targetPosition.x - this.position.x;
+          const dy = this.targetPosition.y - this.position.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < 3) {{
+            this.isResting = true;
+            this.restUntil = now + this.restMin + Math.random() * (this.restMax - this.restMin);
+          }} else {{
+            let dirX = dx / dist;
+            let dirY = dy / dist;
+
+            // Soft organic wobble around the direct heading.
+            this.wanderAngle += this.wanderSpeed;
+            dirX += Math.cos(this.wanderAngle) * this.wanderStrength;
+            dirY += Math.sin(this.wanderAngle) * this.wanderStrength;
+            const mag = Math.hypot(dirX, dirY) || 1;
+            dirX /= mag;
+            dirY /= mag;
+
+            this.position.x += dirX * this.speed;
+            this.position.y += dirY * this.speed;
+
+            // Full heading angle, no damping -- the tilt should actually
+            // match the direction of travel. +90 accounts for the sprite's
+            // resting pose facing "up" (antenna at top) rather than "right".
+            const targetRotation = Math.atan2(dirY, dirX) * (180 / Math.PI) + 90;
+            let rotDelta = targetRotation - this.rotation;
+            rotDelta = ((rotDelta + 180) % 360 + 360) % 360 - 180;
+            this.rotation += rotDelta * this.rotationLerp;
+          }}
+        }}
+
+        this.bobPhase += this.isResting ? 0.02 : 0.012;
+        this.bobOffset = Math.sin(this.bobPhase) * this.bobAmount;
+
+        this.element.style.left = `${{this.position.x}}px`;
+        this.element.style.top = `${{this.position.y + this.bobOffset}}px`;
+        this.element.style.transform = `scale(${{this.scale}}) rotate(${{this.rotation}}deg)`;
+
+        requestAnimationFrame(update);
+      }};
+
+      update();
+    }}
+
+    destroy() {{
+      this.active = false;
+      if (this.element && this.element.parentNode) {{
+        this.element.parentNode.removeChild(this.element);
+      }}
+    }}
+  }}
+
+  class ButterflyManager {{
+    constructor(containerSelector, count) {{
+      this.container = document.querySelector(containerSelector);
+      if (!this.container) return;
+
+      this.butterflies = [];
+      this.spawnTimeouts = [];
+      const isMobile = window.innerWidth <= 968;
+      this.count = isMobile ? Math.ceil(count / 2) : count;
+
+      // Dim, calm colors, one per butterfly -- shuffled and handed out
+      // without repeats so no two on screen at once match.
+      this.colors = ['#7891ab', '#7fa08f', '#b98872', '#b9a468', '#9689ab'];
+      for (let i = this.colors.length - 1; i > 0; i--) {{
+        const j = Math.floor(Math.random() * (i + 1));
+        [this.colors[i], this.colors[j]] = [this.colors[j], this.colors[i]];
+      }}
+
+      this.init();
+    }}
+
+    init() {{
+      this.container.innerHTML = '';
+      for (let i = 0; i < this.count; i++) {{
+        const color = this.colors[i % this.colors.length];
+        const t = setTimeout(() => {{
+          this.butterflies.push(new Butterfly(this.container, i + 1, color));
+        }}, i * 800);
+        this.spawnTimeouts.push(t);
+      }}
+    }}
+
+    clear() {{
+      this.spawnTimeouts.forEach(t => clearTimeout(t));
+      this.spawnTimeouts = [];
+      this.butterflies.forEach(butterfly => butterfly.destroy());
+      this.butterflies = [];
+    }}
+  }}
+
+  (function() {{
+    function startDuskButterflies() {{
+      if (window.__duskButterflyManager) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!document.querySelector('.butterflies-container')) return;
+      window.__duskButterflyManager = new ButterflyManager('.butterflies-container', 5);
+    }}
+    function stopDuskButterflies() {{
+      if (window.__duskButterflyManager) {{
+        window.__duskButterflyManager.clear();
+        window.__duskButterflyManager = null;
+      }}
+    }}
+    window.__startDuskButterflies = startDuskButterflies;
+    window.__stopDuskButterflies = stopDuskButterflies;
+    if (document.documentElement.getAttribute('data-theme') === 'dusk') {{
+      startDuskButterflies();
+    }}
+  }})();
+</script>
+
+<script>
   (function() {{
     const toggleBtn = document.getElementById('themeToggle');
     const themeOrder = ['light', 'dusk', 'dark'];
@@ -1151,6 +1406,11 @@ def generate_dashboard_html(data):
       const newTheme = themeOrder[(currentIndex + 1) % themeOrder.length];
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
+      if (newTheme === 'dusk') {{
+        if (window.__startDuskButterflies) window.__startDuskButterflies();
+      }} else {{
+        if (window.__stopDuskButterflies) window.__stopDuskButterflies();
+      }}
     }});
   }})();
 </script>
